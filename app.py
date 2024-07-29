@@ -105,10 +105,17 @@ if option == 'Remove duplicates from one file':
     if uploaded_file is not None:
         df = read_csv(uploaded_file)
         unique_df = remove_duplicates_and_keep_one(df)
-        st.write("Unique Entries:")
+        duplicates_df = find_duplicates_in_one_file(df)
+        st.write("Unique Records:")
         st.dataframe(unique_df)
-        csv = unique_df.to_csv(index=False).encode('utf-8')
-        st.download_button("Download Unique Entries CSV", data=csv, file_name="unique_entries.csv", mime='text/csv')
+        st.write("Duplicates Only:")
+        st.dataframe(duplicates_df)
+        
+        csv_unique = unique_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Unique Records CSV", data=csv_unique, file_name="unique_records.csv", mime='text/csv')
+
+        csv_duplicates = duplicates_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Duplicates Only CSV", data=csv_duplicates, file_name="duplicates_only.csv", mime='text/csv')
 
 elif option == 'Find and split duplicates between two files':
     uploaded_file_a = st.file_uploader("Choose first CSV file", type="csv")
@@ -117,18 +124,26 @@ elif option == 'Find and split duplicates between two files':
         df_a = read_csv(uploaded_file_a)
         df_b = read_csv(uploaded_file_b)
         unique_in_a, unique_in_b, duplicates = find_and_split_duplicates(df_a, df_b)
+        
         st.write("Unique in A:")
         st.dataframe(unique_in_a)
         st.write("Unique in B:")
         st.dataframe(unique_in_b)
         st.write("Duplicates:")
         st.dataframe(duplicates)
+
         csv_a = unique_in_a.to_csv(index=False).encode('utf-8')
         st.download_button("Download Unique in A CSV", data=csv_a, file_name="unique_in_a.csv", mime='text/csv')
+
         csv_b = unique_in_b.to_csv(index=False).encode('utf-8')
         st.download_button("Download Unique in B CSV", data=csv_b, file_name="unique_in_b.csv", mime='text/csv')
+
         csv_duplicates = duplicates.to_csv(index=False).encode('utf-8')
         st.download_button("Download Duplicates CSV", data=csv_duplicates, file_name="duplicates.csv", mime='text/csv')
+
+        merged_df = pd.concat([unique_in_a, unique_in_b]).drop_duplicates()
+        csv_merged = merged_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Merged CSV", data=csv_merged, file_name="merged.csv", mime='text/csv')
 
 elif option == 'Find and split duplicates between three files':
     uploaded_file_a = st.file_uploader("Choose first CSV file", type="csv")
@@ -139,6 +154,7 @@ elif option == 'Find and split duplicates between three files':
         df_b = read_csv(uploaded_file_b)
         df_c = read_csv(uploaded_file_c)
         unique_in_a, unique_in_b, unique_in_c, duplicates = find_and_split_duplicates(df_a, df_b, df_c)
+        
         st.write("Unique in A:")
         st.dataframe(unique_in_a)
         st.write("Unique in B:")
@@ -147,11 +163,19 @@ elif option == 'Find and split duplicates between three files':
         st.dataframe(unique_in_c)
         st.write("Duplicates:")
         st.dataframe(duplicates)
+
         csv_a = unique_in_a.to_csv(index=False).encode('utf-8')
         st.download_button("Download Unique in A CSV", data=csv_a, file_name="unique_in_a.csv", mime='text/csv')
+
         csv_b = unique_in_b.to_csv(index=False).encode('utf-8')
         st.download_button("Download Unique in B CSV", data=csv_b, file_name="unique_in_b.csv", mime='text/csv')
+
         csv_c = unique_in_c.to_csv(index=False).encode('utf-8')
         st.download_button("Download Unique in C CSV", data=csv_c, file_name="unique_in_c.csv", mime='text/csv')
+
         csv_duplicates = duplicates.to_csv(index=False).encode('utf-8')
         st.download_button("Download Duplicates CSV", data=csv_duplicates, file_name="duplicates.csv", mime='text/csv')
+
+        merged_df = pd.concat([unique_in_a, unique_in_b, unique_in_c]).drop_duplicates()
+        csv_merged = merged_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Merged CSV", data=csv_merged, file_name="merged.csv", mime='text/csv')
